@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Запакуй · Финансовый советник · Ozon январь 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;600;700&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #0ea5e9;
+    --accent2: #38bdf8;
+    --green: #22c55e;
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --muted2: #94a3b8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Golos Text', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+  .cabinet-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--muted2);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .cabinet-badge strong { color: var(--text); }
+  .period-badge {
+    background: linear-gradient(135deg, #0ea5e920, #0ea5e908);
+    border: 1px solid #0ea5e940;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Golos Text', sans-serif;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--surface2); color: var(--text); }
+  .nav-btn.active { background: var(--surface2); color: var(--accent); border: 1px solid var(--border); }
+
+  /* LAYOUT */
+  .layout { display: flex; }
+  .sidebar {
+    width: 220px;
+    min-height: calc(100vh - 56px);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 12px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+  .sidebar-label:first-child { margin-top: 0; }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--muted2);
+    transition: all 0.15s;
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-item.active { background: linear-gradient(135deg,#0ea5e915,#0ea5e908); color: var(--accent); border: 1px solid #0ea5e930; }
+  .sidebar-icon { font-size: 15px; width: 20px; text-align: center; }
+  .sidebar-badge {
+    margin-left: auto;
+    background: var(--red);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+  .sidebar-badge.warn { background: var(--yellow); color: #000; }
+
+  /* MAIN */
+  .main { flex: 1; padding: 28px; max-width: calc(100vw - 220px); overflow-x: hidden; }
+
+  /* PAGE HEADER */
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .page-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .page-subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, border-color 0.15s;
+    cursor: default;
+  }
+  .metric-card:hover { transform: translateY(-1px); border-color: #2a3a55; }
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .metric-card.blue::before { background: linear-gradient(90deg, var(--accent), transparent); }
+  .metric-card.green::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .metric-card.red::before { background: linear-gradient(90deg, var(--red), transparent); }
+  .metric-card.yellow::before { background: linear-gradient(90deg, var(--yellow), transparent); }
+  .metric-card.purple::before { background: linear-gradient(90deg, #a78bfa, transparent); }
+  .metric-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .metric-value {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+  .metric-value.blue { color: var(--accent2); }
+  .metric-value.green { color: var(--green); }
+  .metric-value.red { color: var(--red); }
+  .metric-value.yellow { color: var(--yellow); }
+  .metric-value.purple { color: #c4b5fd; }
+  .metric-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .metric-sub .warn { color: var(--yellow); }
+  .metric-sub .bad { color: var(--red); }
+  .metric-sub .good { color: var(--green); }
+
+  /* AI INSIGHT CARD */
+  .insight-card {
+    background: linear-gradient(135deg, #0a1628, #0e1a2e);
+    border: 1px solid #0ea5e935;
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .insight-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .ai-badge {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .insight-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent2);
+  }
+  .insight-time {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .insight-text {
+    color: var(--muted2);
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .insight-text strong { color: var(--text); }
+  .insight-text .hl-red { color: var(--red); font-weight: 600; }
+  .insight-text .hl-green { color: var(--green); font-weight: 600; }
+  .insight-text .hl-yellow { color: var(--yellow); font-weight: 600; }
+  .insight-text .hl-blue { color: var(--accent2); font-weight: 600; }
+  .insight-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .insight-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Golos Text', sans-serif;
+    transition: all 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .insight-btn:hover { background: #1e2d45; color: var(--text); border-color: #2a3a55; }
+  .insight-btn.primary {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    border-color: transparent;
+    color: white;
+    font-weight: 500;
+  }
+  .insight-btn.primary:hover { opacity: 0.9; }
+
+  /* TWO COLUMN */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+  .col-60-40 { display: grid; grid-template-columns: 60fr 40fr; gap: 18px; margin-bottom: 24px; }
+
+  /* SECTION CARD */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .section-head {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-head-title {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.03em;
+  }
+  .section-head-meta { font-size: 11px; color: var(--muted); }
+  .section-body { padding: 18px 20px; }
+
+  /* WATERFALL */
+  .waterfall-row {
+    display: flex;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid #1e2d4540;
+    gap: 12px;
+  }
+  .waterfall-row:last-child { border-bottom: none; }
+  .wf-label { font-size: 13px; color: var(--muted2); flex: 1; }
+  .wf-label.bold { color: var(--text); font-weight: 600; }
+  .wf-bar-wrap { width: 120px; height: 6px; background: #1e2d45; border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+  .wf-bar { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+  .wf-bar.pos { background: linear-gradient(90deg, var(--green), #16a34a); }
+  .wf-bar.neg { background: linear-gradient(90deg, var(--red), #dc2626); }
+  .wf-bar.acc { background: linear-gradient(90deg, var(--accent), #0284c7); }
+  .wf-amount { font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 600; width: 100px; text-align: right; flex-shrink: 0; }
+  .wf-pct { font-size: 11px; color: var(--muted); width: 44px; text-align: right; flex-shrink: 0; }
+  .wf-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+  /* SKU TABLE */
+  .sku-table { width: 100%; border-collapse: collapse; }
+  .sku-table th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .sku-table th:not(:first-child) { text-align: right; }
+  .sku-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1e2d4530;
+    font-size: 13px;
+    vertical-align: middle;
+  }
+  .sku-table td:not(:first-child) { text-align: right; }
+  .sku-table tr:hover td { background: #1a2235; }
+  .sku-table tr:last-child td { border-bottom: none; }
+  .sku-name { color: var(--text); font-size: 12px; max-width: 220px; }
+  .sku-art { color: var(--muted); font-size: 10px; margin-top: 2px; font-family: 'Courier New', monospace; }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .tag.profit { background: #22c55e18; color: var(--green); border: 1px solid #22c55e30; }
+  .tag.loss { background: #ef444418; color: var(--red); border: 1px solid #ef444430; }
+  .tag.nocost { background: #f59e0b18; color: var(--yellow); border: 1px solid #f59e0b30; }
+  .num-pos { color: var(--green); font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 600; }
+  .num-neg { color: var(--red); font-family: 'Unbounded', sans-serif; font-size: 12px; font-weight: 600; }
+  .num-neu { color: var(--muted2); font-family: 'Unbounded', sans-serif; font-size: 12px; }
+  .margin-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .margin-pill.high { background: #22c55e18; color: var(--green); }
+  .margin-pill.mid { background: #f59e0b18; color: var(--yellow); }
+  .margin-pill.low { background: #ef444418; color: var(--red); }
+
+  /* ALERTS */
+  .alert-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #1e2d4540;
+    align-items: flex-start;
+  }
+  .alert-item:last-child { border-bottom: none; }
+  .alert-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .alert-icon.red { background: #ef444418; }
+  .alert-icon.yellow { background: #f59e0b18; }
+  .alert-icon.blue { background: #0ea5e918; }
+  .alert-body { flex: 1; }
+  .alert-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .alert-desc { font-size: 12px; color: var(--muted2); line-height: 1.5; }
+  .alert-meta { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .alert-value { font-family: 'Unbounded', sans-serif; font-size: 13px; font-weight: 600; flex-shrink: 0; padding-top: 2px; }
+
+  /* DONUT */
+  .donut-wrap { display: flex; gap: 20px; align-items: center; }
+  .donut-svg { flex-shrink: 0; }
+  .donut-legend { flex: 1; }
+  .legend-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #1e2d4530; }
+  .legend-item:last-child { border-bottom: none; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .legend-label { font-size: 12px; color: var(--muted2); flex: 1; }
+  .legend-amount { font-family: 'Unbounded', sans-serif; font-size: 11px; font-weight: 600; color: var(--text); }
+  .legend-pct { font-size: 11px; color: var(--muted); width: 36px; text-align: right; }
+
+  /* SKU DISTRIBUTION */
+  .sku-dist { display: flex; gap: 12px; margin-bottom: 16px; }
+  .dist-item {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .dist-num {
+    font-family: 'Unbounded', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .dist-label { font-size: 11px; color: var(--muted); }
+
+  /* EXPLAIN BUTTON */
+  .explain-btn {
+    background: none;
+    border: 1px solid #0ea5e940;
+    color: var(--accent);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-family: 'Golos Text', sans-serif;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.15s;
+  }
+  .explain-btn:hover { background: #0ea5e915; border-color: var(--accent); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #00000090;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid #0ea5e940;
+    border-radius: 16px;
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-head {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+  }
+  .modal-title { font-family: 'Unbounded', sans-serif; font-size: 14px; color: var(--text); font-weight: 600; }
+  .modal-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .modal-close:hover { background: var(--surface2); color: var(--text); }
+  .modal-body { padding: 24px; }
+  .modal-loading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted2);
+    padding: 20px 0;
+  }
+  .spinner {
+    width: 20px; height: 20px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .modal-insight {
+    color: var(--muted2);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .modal-insight strong { color: var(--text); }
+  .modal-insight .hl-red { color: var(--red); font-weight: 600; }
+  .modal-insight .hl-green { color: var(--green); font-weight: 600; }
+  .modal-insight .hl-yellow { color: var(--yellow); font-weight: 600; }
+  .modal-insight .hl-blue { color: var(--accent2); font-weight: 600; }
+  .modal-insight p { margin-bottom: 14px; }
+  .modal-insight p:last-child { margin-bottom: 0; }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a3a55; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--muted);
+    padding: 6px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Golos Text', sans-serif;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--surface2); }
+  .tab-btn.active { color: var(--accent); background: var(--surface2); border-color: var(--border); }
+
+  /* ANIMATIONS */
+  .fade-in { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    ФИНСОВЕТНИК
+  </div>
+  <div class="nav">
+    <button class="nav-btn active">Обзор</button>
+    <button class="nav-btn">Финансы</button>
+    <button class="nav-btn">Товары</button>
+    <button class="nav-btn">Реклама</button>
+    <button class="nav-btn">Остатки</button>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center;">
+    <div class="cabinet-badge"><strong>Запакуй</strong> · Ozon</div>
+    <div class="period-badge">Январь 2026</div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-label">Кабинеты</div>
+    <a class="sidebar-item active">
+      <span class="sidebar-icon">🏪</span> Запакуй · Ozon
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">🏪</span> Запакуй · WB
+    </a>
+
+    <div class="sidebar-label">Разделы</div>
+    <a class="sidebar-item active">
+      <span class="sidebar-icon">📊</span> Обзор
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">💰</span> P&amp;L
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">📦</span> Товары
+      <span class="sidebar-badge warn">13</span>
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">📢</span> Реклама
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">🏭</span> Остатки
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">⭐</span> Отзывы
+    </a>
+
+    <div class="sidebar-label">Инсайты</div>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">🔔</span> Алерты
+      <span class="sidebar-badge">3</span>
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">🧠</span> История AI
+    </a>
+    <a class="sidebar-item">
+      <span class="sidebar-icon">⚙️</span> Настройки
+    </a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main fade-in">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Обзор · Запакуй · Ozon</div>
+        <div class="page-subtitle">Данные верифицированы · 135 SKU · FBS &amp; realFBS · Январь 2026</div>
+      </div>
+      <button class="insight-btn primary" onclick="openModal('summary')">
+        ✦ Спросить AI
+      </button>
+    </div>
+
+    <!-- AI INSIGHT -->
+    <div class="insight-card">
+      <div class="insight-header">
+        <span class="ai-badge">✦ AI Сводка</span>
+        <span class="insight-title">Финансовый разбор · январь 2026</span>
+        <span class="insight-time">Сегодня, 08:15</span>
+      </div>
+      <div class="insight-text">
+        Январь закрыт с чистой прибылью <span class="hl-yellow">18 858 ₽</span> при марже <span class="hl-red">6.5%</span> — это ниже вашей цели в 15–20%. Главная аномалия месяца: <strong>баллы за скидки (144 630 ₽) почти равны выручке (145 461 ₽)</strong> — соотношение <span class="hl-red">99.5%</span> при норме ≤30%. Это означает, что основная часть продаж прошла через акции Ozon, где маркетплейс компенсирует скидку баллами, а не живыми деньгами. При этом комиссия и логистика считаются от полной цены — отсюда и сжатая маржа.
+        <br><br>
+        Из <strong>135 SKU</strong> продажи зафиксированы по 115. Прибыльных — <span class="hl-green">54</span>, убыточных — <span class="hl-red">13</span>, без себестоимости — <span class="hl-yellow">47</span> (их реальная прибыльность неизвестна). Топ-генератор прибыли: Коробка-куб белая 21×21 (<span class="hl-green">+5 217 ₽</span>, маржа 25.8%). Главный убыточник: Коробка с розовой окантовкой (<span class="hl-red">−509 ₽</span> при логистике ×1.4 от выручки).
+        <br><br>
+        <strong>Приоритет на февраль:</strong> проверить акционные настройки — часть товаров попала в акции автоматически. Заполнить себестоимость для 47 SKU — без этого картина неполная.
+      </div>
+      <div class="insight-actions">
+        <button class="insight-btn primary" onclick="openModal('balls')">✦ Почему баллы 99.5%?</button>
+        <button class="insight-btn" onclick="openModal('margin')">📉 Как поднять маржу?</button>
+        <button class="insight-btn" onclick="openModal('forecast')">📈 Прогноз на февраль</button>
+        <button class="insight-btn" onclick="openModal('actions')">✅ Что делать сейчас?</button>
+      </div>
+    </div>
+
+    <!-- METRICS -->
+    <div class="metrics-grid">
+      <div class="metric-card blue">
+        <div class="metric-label">Выручка факт.</div>
+        <div class="metric-value blue">145 461 ₽</div>
+        <div class="metric-sub">+ баллы <span class="warn">144 631 ₽</span></div>
+      </div>
+      <div class="metric-card green">
+        <div class="metric-label">Валовый доход</div>
+        <div class="metric-value green">291 108 ₽</div>
+        <div class="metric-sub">выручка + баллы + прочее</div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-label">Вычеты Ozon</div>
+        <div class="metric-value red">−205 353 ₽</div>
+        <div class="metric-sub"><span class="bad">70.5%</span> от валового дохода</div>
+      </div>
+      <div class="metric-card yellow">
+        <div class="metric-label">Чистая прибыль</div>
+        <div class="metric-value yellow">18 858 ₽</div>
+        <div class="metric-sub">после COGS и вычетов <button class="explain-btn" style="display:inline-flex;margin-left:4px" onclick="openModal('net')">✦</button></div>
+      </div>
+      <div class="metric-card red">
+        <div class="metric-label">Маржа</div>
+        <div class="metric-value red">6.5%</div>
+        <div class="metric-sub">цель: <span class="good">15–20%</span> <button class="explain-btn" style="display:inline-flex;margin-left:4px" onclick="openModal('margin')">✦</button></div>
+      </div>
+    </div>
+
+    <!-- ALERTS ROW -->
+    <div class="three-col">
+      <div class="section-card" style="grid-column: span 1;">
+        <div class="section-head">
+          <span class="section-head-title">🔴 Активные алерты</span>
+          <span class="section-head-meta">3 требуют внимания</span>
+        </div>
+        <div class="section-body" style="padding: 4px 12px;">
+          <div class="alert-item">
+            <div class="alert-icon red">⚠️</div>
+            <div class="alert-body">
+              <div class="alert-title">Баллы = 99.5% выручки</div>
+              <div class="alert-desc">Норма ≤30%. Товары в акциях Ozon с критичными скидками.</div>
+              <div class="alert-meta">Влияние на маржу: −6 п.п.</div>
+            </div>
+            <button class="explain-btn" onclick="openModal('balls')">✦</button>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon yellow">⚠️</div>
+            <div class="alert-body">
+              <div class="alert-title">47 SKU без себестоимости</div>
+              <div class="alert-desc">Реальная прибыль по этим товарам неизвестна.</div>
+              <div class="alert-meta">Оборот: ~156 000 ₽</div>
+            </div>
+            <button class="explain-btn" onclick="openModal('nocost')">✦</button>
+          </div>
+          <div class="alert-item">
+            <div class="alert-icon red">⚠️</div>
+            <div class="alert-body">
+              <div class="alert-title">Штрафы за отгрузку: −1 100 ₽</div>
+              <div class="alert-desc">Просрочки, нерекомендованные слоты, пересорт.</div>
+              <div class="alert-meta">4 типа нарушений, все устранимы</div>
+            </div>
+            <button class="explain-btn" onclick="openModal('fines')">✦</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SKU DISTRIBUTION -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-head-title">Распределение SKU</span>
+          <span class="section-head-meta">135 всего</span>
+        </div>
+        <div class="section-body">
+          <div class="sku-dist">
+            <div class="dist-item">
+              <div class="dist-num" style="color:var(--green)">54</div>
+              <div class="dist-label">Прибыльных</div>
+            </div>
+            <div class="dist-item">
+              <div class="dist-num" style="color:var(--red)">13</div>
+              <div class="dist-label">Убыточных</div>
+            </div>
+            <div class="dist-item">
+              <div class="dist-num" style="color:var(--yellow)">47</div>
+              <div class="dist-label">Нет с/с</div>
+            </div>
+            <div class="dist-item">
+              <div class="dist-num" style="color:var(--muted)">21</div>
+              <div class="dist-label">Нет продаж</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">Суммарный убыток по убыточным SKU</div>
+            <div style="font-family:'Unbounded',sans-serif;font-size:18px;color:var(--red);font-weight:700;">−2 887 ₽</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:4px;">Топ причина: высокая логистика при низкой цене</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NON-SKU -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-head-title">Вне SKU (realFBS)</span>
+          <button class="explain-btn" onclick="openModal('realfbs')">✦ Объяснить</button>
+        </div>
+        <div class="section-body" style="padding: 4px 20px;">
+          <div class="waterfall-row">
+            <div class="wf-label">Услуги realFBS</div>
+            <div class="wf-amount" style="color:var(--red)">−5 128 ₽</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">Штрафы за отгрузку</div>
+            <div class="wf-amount" style="color:var(--red)">−1 250 ₽</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">Хранение FBO</div>
+            <div class="wf-amount" style="color:var(--red)">−479 ₽</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">✅ Компенсации Ozon</div>
+            <div class="wf-amount" style="color:var(--green)">+2 608 ₽</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label bold">Итого вне SKU</div>
+            <div class="wf-amount" style="color:var(--red)">−4 509 ₽</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P&L + STRUCTURE -->
+    <div class="col-60-40">
+      <!-- WATERFALL -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-head-title">P&amp;L · Водопад затрат</span>
+          <button class="explain-btn" onclick="openModal('pl')">✦ Объяснить</button>
+        </div>
+        <div class="section-body" style="padding: 8px 20px;">
+          <div class="waterfall-row">
+            <div class="wf-label">Выручка</div>
+            <div class="wf-bar-wrap"><div class="wf-bar pos" style="width:50%"></div></div>
+            <div class="wf-amount" style="color:var(--accent2)">+145 461 ₽</div>
+            <div class="wf-pct">49.9%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">Баллы за скидки</div>
+            <div class="wf-bar-wrap"><div class="wf-bar pos" style="width:50%"></div></div>
+            <div class="wf-amount" style="color:var(--accent2)">+144 631 ₽</div>
+            <div class="wf-pct">49.7%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">Прочий доход</div>
+            <div class="wf-bar-wrap"><div class="wf-bar pos" style="width:1%"></div></div>
+            <div class="wf-amount" style="color:var(--accent2)">+1 016 ₽</div>
+            <div class="wf-pct">0.3%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label bold">Валовый доход</div>
+            <div class="wf-bar-wrap"><div class="wf-bar acc" style="width:100%"></div></div>
+            <div class="wf-amount" style="color:var(--text)">291 108 ₽</div>
+            <div class="wf-pct">100%</div>
+          </div>
+          <div class="wf-divider"></div>
+          <div class="waterfall-row">
+            <div class="wf-label">− Комиссия Ozon</div>
+            <div class="wf-bar-wrap"><div class="wf-bar neg" style="width:41%"></div></div>
+            <div class="wf-amount" style="color:var(--red)">−120 694 ₽</div>
+            <div class="wf-pct">41.5%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">− Логистика</div>
+            <div class="wf-bar-wrap"><div class="wf-bar neg" style="width:24%"></div></div>
+            <div class="wf-amount" style="color:var(--red)">−71 235 ₽</div>
+            <div class="wf-pct">24.5%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">− Обр. логистика</div>
+            <div class="wf-bar-wrap"><div class="wf-bar neg" style="width:4%"></div></div>
+            <div class="wf-amount" style="color:var(--red)">−12 724 ₽</div>
+            <div class="wf-pct">4.4%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">− Реклама</div>
+            <div class="wf-bar-wrap"><div class="wf-bar neg" style="width:0.5%"></div></div>
+            <div class="wf-amount" style="color:var(--red)">−694 ₽</div>
+            <div class="wf-pct">0.2%</div>
+          </div>
+          <div class="waterfall-row">
+            <div class="wf-label">− Себестоимость</div>
+            <div class="wf-bar-wrap"><div class="wf-bar neg" style="width:10%"></div></div>
+            <div class="wf-amount" style="color:var(--red)">−27 730 ₽</div>
+            <div class="wf-pct">9.5%</div>
+          </div>
+          <div class="wf-divider"></div>
+          <div class="waterfall-row">
+            <div class="wf-label bold">Чистая прибыль (по SKU)</div>
+            <div class="wf-bar-wrap"><div class="wf-bar pos" style="width:6.5%"></div></div>
+            <div class="wf-amount" style="color:var(--yellow)">+18 858 ₽</div>
+            <div class="wf-pct" style="color:var(--yellow)">6.5%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STRUCTURE PIE -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-head-title">Структура вычетов</span>
+          <span class="section-head-meta">−205 353 ₽ итого</span>
+        </div>
+        <div class="section-body">
+          <svg class="donut-svg" width="130" height="130" viewBox="0 0 130 130" style="display:block;margin:0 auto 16px;">
+            <!-- donut segments -->
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#1e2d45" stroke-width="22"/>
+            <!-- commission 58.8% = 212 degrees -->
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#ef4444" stroke-width="22"
+              stroke-dasharray="183 131" stroke-dashoffset="0" transform="rotate(-90 65 65)"/>
+            <!-- logistics 34.7% = 125 degrees -->
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#f59e0b" stroke-width="22"
+              stroke-dasharray="108 206" stroke-dashoffset="-183" transform="rotate(-90 65 65)"/>
+            <!-- return 6.2% = 22 degrees -->
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#a78bfa" stroke-width="22"
+              stroke-dasharray="20 294" stroke-dashoffset="-291" transform="rotate(-90 65 65)"/>
+            <!-- other -->
+            <circle cx="65" cy="65" r="50" fill="none" stroke="#64748b" stroke-width="22"
+              stroke-dasharray="3 311" stroke-dashoffset="-311" transform="rotate(-90 65 65)"/>
+            <text x="65" y="69" text-anchor="middle" fill="#94a3b8" font-size="11" font-family="Golos Text">вычеты</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#ef4444"></div>
+              <div class="legend-label">Комиссия</div>
+              <div class="legend-amount">−120 694</div>
+              <div class="legend-pct">58.8%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#f59e0b"></div>
+              <div class="legend-label">Логистика</div>
+              <div class="legend-amount">−71 235</div>
+              <div class="legend-pct">34.7%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#a78bfa"></div>
+              <div class="legend-label">Обр. логистика</div>
+              <div class="legend-amount">−12 724</div>
+              <div class="legend-pct">6.2%</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:#64748b"></div>
+              <div class="legend-label">Реклама + прочее</div>
+              <div class="legend-amount">−694</div>
+              <div class="legend-pct">0.3%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKU TABLES -->
+    <div class="two-col">
+      <!-- TOP PROFITABLE -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-head-title">ТОП-5 · Прибыльные SKU</span>
+          <button class="explain-btn" onclick="openModal('topsku')">✦ Разбор</button>
+        </div>
+        <div>
+          <table class="sku-table">
+            <thead>
+              <tr>
+                <th>Товар</th>
+                <th>Шт</th>
+                <th>Прибыль</th>
+                <th>Маржа</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="sku-name">Коробка-куб белая 21×21</div><div class="sku-art">21052025001</div></td>
+                <td><span class="num-neu">28</span></td>
+                <td><span class="num-pos">+5 217 ₽</span></td>
+                <td><span class="margin-pill high">25.8%</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Наполнитель для подарка (осн.)</div><div class="sku-art">18112025001</div></td>
+                <td><span class="num-neu">11</span></td>
+                <td><span class="num-pos">+2 012 ₽</span></td>
+                <td><span class="margin-pill high">33.5%</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Коробка для торта 16×16 выс. 16</div><div class="sku-art">181120250099</div></td>
+                <td><span class="num-neu">2</span></td>
+                <td><span class="num-pos">+1 320 ₽</span></td>
+                <td><span class="margin-pill high">44.2%</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Коробка для торта прямоуг. 30×40</div><div class="sku-art">12102024003</div></td>
+                <td><span class="num-neu">5</span></td>
+                <td><span class="num-pos">+1 157 ₽</span></td>
+                <td><span class="margin-pill mid">14.5%</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Фурнитура брелок (карабин, 26 шт)</div><div class="sku-art">26092025001</div></td>
+                <td><span class="num-neu">26</span></td>
+                <td><span class="num-pos">+909 ₽</span></td>
+                <td><span class="margin-pill mid">7.3%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TOP LOSING -->
+      <div class="section-card">
+        <div class="section-head">
+          <span class="section-head-title">ТОП-5 · Убыточные SKU</span>
+          <button class="explain-btn" onclick="openModal('losssku')">✦ Разбор</button>
+        </div>
+        <div>
+          <table class="sku-table">
+            <thead>
+              <tr>
+                <th>Товар</th>
+                <th>Шт</th>
+                <th>Убыток</th>
+                <th>Причина</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="sku-name">Коробка с розовой окантовкой</div><div class="sku-art">29032025009</div></td>
+                <td><span class="num-neu">4</span></td>
+                <td><span class="num-neg">−509 ₽</span></td>
+                <td><span class="tag loss">Лог. ×1.4</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Коробка для рулета 27.5×11</div><div class="sku-art">13012025004</div></td>
+                <td><span class="num-neu">6</span></td>
+                <td><span class="num-neg">−305 ₽</span></td>
+                <td><span class="tag loss">Лог. ×0.8</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Наполнитель для подарка (малый)</div><div class="sku-art">18112025003</div></td>
+                <td><span class="num-neu">5</span></td>
+                <td><span class="num-neg">−281 ₽</span></td>
+                <td><span class="tag loss">Возвраты</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Фурнитура брелок 5 шт</div><div class="sku-art">26032024001</div></td>
+                <td><span class="num-neu">3</span></td>
+                <td><span class="num-neg">−186 ₽</span></td>
+                <td><span class="tag loss">Цена низкая</span></td>
+              </tr>
+              <tr>
+                <td><div class="sku-name">Пакет подарочный новогодний</div><div class="sku-art">4112024007</div></td>
+                <td><span class="num-neu">2</span></td>
+                <td><span class="num-neg">−164 ₽</span></td>
+                <td><span class="tag loss">Сезонность</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <span class="ai-badge">✦ AI</span>
+      <span class="modal-title" id="modal-title">Анализ</span>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-loading" id="modal-loading">
+        <div class="spinner"></div>
+        Генерирую инсайт на основе ваших данных...
+      </div>
+      <div class="modal-insight" id="modal-content" style="display:none;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const INSIGHTS = {
+  balls: {
+    title: 'Аномалия: баллы = 99.5% выручки',
+    text: `<p><strong>Что произошло.</strong> В январе баллы за скидки составили <span class="hl-red">144 631 ₽</span> при выручке <span class="hl-blue">145 461 ₽</span> — соотношение 99.5% при норме ≤30%. Это экстремальная аномалия.</p>
+<p><strong>Механика.</strong> Когда товар участвует в акции Ozon, маркетплейс компенсирует скидку покупателю баллами. Для вас это выглядит как "Баллы за скидки" в отчёте начислений — но это не живые деньги. Комиссия и логистика при этом считаются от <em>полной</em> цены до скидки. В итоге вы несёте реальные затраты, а получаете "виртуальный" доход в виде баллов.</p>
+<p><strong>Почему так много?</strong> Январь — постновогодний период. Ozon агрессивно включает товары в зимние распродажи, часто автоматически. Вероятно, большая часть ваших 135 SKU была автоматически добавлена в акции в декабре–январе.</p>
+<p><strong>Влияние на прибыль.</strong> Если бы баллы не превышали 30% выручки, маржа была бы ориентировочно <span class="hl-green">11–13%</span> вместо текущих 6.5%.</p>
+<p><strong>Что делать.</strong> В личном кабинете Ozon проверьте раздел "Акции" — какие товары участвуют принудительно, а какие можно вывести. В первую очередь обратите внимание на прибыльные SKU с маржой выше 15%: их участие в акциях нецелесообразно.</p>`
+  },
+  margin: {
+    title: 'Как поднять маржу до 15–20%',
+    text: `<p><strong>Текущая ситуация:</strong> маржа <span class="hl-red">6.5%</span> при цели 15–20%. Разрыв — 8–13 п.п. Это значительно, но устранимо за 2–3 месяца системной работы.</p>
+<p><strong>Рычаг #1 — Акционная политика (+4–6 п.п.).</strong> Главный рычаг. 99.5% баллов говорит о том, что почти все продажи идут через акции. Стратегия: оставить в акциях только товары с маржой ≥20% до скидки. Остальные — вывести или ограничить участие через настройки минимальной цены.</p>
+<p><strong>Рычаг #2 — Убыточные SKU (+1–2 п.п.).</strong> 13 убыточных SKU генерируют <span class="hl-red">−2 887 ₽</span> убытка. Для каждого нужно решение: поднять цену, убрать из акций, или остановить продажи. Коробка с розовой окантовкой — лидер убытков, у неё логистика превышает выручку в 1.4 раза. Здесь поможет только повышение цены или снятие с продажи.</p>
+<p><strong>Рычаг #3 — Себестоимость 47 SKU (+неизвестно).</strong> По 47 товарам без себестоимости невозможно оценить реальную прибыльность. Заполнить — приоритет. Среди них могут быть как прибыльные, так и убыточные товары.</p>
+<p><strong>Рычаг #4 — Оптимизация логистики (+1–2 п.п.).</strong> Логистика составляет 24.5% от валового дохода. Для негабаритных товаров (брелоки, фурнитура) это норма. Но для коробок — стоит проверить тарифную зону и упаковку.</p>`
+  },
+  forecast: {
+    title: 'Прогноз на февраль 2026',
+    text: `<p><strong>Базовый сценарий (без изменений).</strong> Если не менять акционную политику, февраль повторит январь: маржа <span class="hl-yellow">6–8%</span>, выручка в районе 130–160 тыс. Февраль традиционно слабее января по объёму — постновогодний спад в категории упаковки и подарочных товаров продолжается до марта.</p>
+<p><strong>Оптимистичный сценарий (с изменениями).</strong> Если вывести топ-20 прибыльных SKU из агрессивных акций и заполнить себестоимость по 47 позициям, маржа может вырасти до <span class="hl-green">10–13%</span> в феврале.</p>
+<p><strong>Сезонный контекст.</strong> Категория подарочной упаковки имеет выраженные пики: Новый год (декабрь), 8 Марта (февраль–март), майские праздники. Февраль — второй по активности месяц. Стоит готовить SKU с подарочной тематикой заранее, при этом контролируя участие в акциях.</p>
+<p><strong>Риски февраля.</strong> Логистические затраты Ozon традиционно растут в праздничные периоды. Следите за изменениями тарифов в личном кабинете.</p>`
+  },
+  actions: {
+    title: 'Приоритетные действия',
+    text: `<p><strong>Сегодня (15 минут):</strong></p>
+<p>1. Зайти в ЛК Ozon → Акции → посмотреть какие товары участвуют в акциях автоматически. Вывести из акций Коробка-куб белая (21×21) и Наполнитель для подарка — они прибыльны и без скидок.</p>
+<p><strong>На этой неделе:</strong></p>
+<p>2. Заполнить себестоимость для <span class="hl-yellow">47 SKU</span> без с/с. Использовать готовый формат CSV — загрузка займёт час. Без этого невозможно оценить реальную прибыльность половины ассортимента.</p>
+<p>3. Принять решение по Коробке с розовой окантовкой: логистика 734 ₽ при выручке 541 ₽ — это структурный убыток. Варианты: поднять цену до 800+ ₽ или остановить продажи.</p>
+<p><strong>В течение месяца:</strong></p>
+<p>4. Проверить 4 типа штрафов за отгрузку (−1 250 ₽) — все устранимы организационно: соблюдение слотов, проверка маркировки перед отгрузкой.</p>
+<p>5. Установить минимальные цены для участия в акциях по всему ассортименту — это защитит маржу автоматически при включении в будущие акции Ozon.</p>`
+  },
+  net: {
+    title: 'Из чего сложились 18 858 ₽ прибыли',
+    text: `<p><strong>Чистая прибыль по SKU — 18 858 ₽</strong> — это результат по 67 SKU с известной себестоимостью, где зафиксированы продажи.</p>
+<p>Структура: Валовый доход (291 108) − Комиссия (120 694) − Логистика (71 235) − Обратная логистика (12 724) − Реклама (694) − Себестоимость (27 730) = <span class="hl-yellow">18 858 ₽</span></p>
+<p><strong>Важно учесть:</strong> к этому нужно прибавить вне-SKU статьи: Компенсации Ozon (+2 608 ₽) и вычесть услуги realFBS (−5 128 ₽), штрафы (−1 250 ₽), хранение (−479 ₽). Итоговая реальная прибыль за январь: <span class="hl-yellow">≈14 609 ₽</span>.</p>
+<p>По <span class="hl-yellow">47 SKU без себестоимости</span> оборот составил порядка 156 000 ₽. Если их реальная маржа хотя бы 10%, это ещё ~15 600 ₽ прибыли, которую вы не видите в расчёте.</p>`
+  },
+  nocost: {
+    title: '47 SKU без себестоимости',
+    text: `<p>По 47 артикулам в справочнике отсутствует поле "Себестоимость". Это <span class="hl-yellow">35% всех активных SKU</span>. Их оборот в январе — порядка 156 000 ₽.</p>
+<p><strong>Почему это проблема.</strong> Без себестоимости невозможно рассчитать реальную прибыль по товару. Система показывает разницу между доходом от Ozon и затратами Ozon — но не учитывает, сколько вы сами заплатили за товар. Товар может выглядеть "прибыльным" в отчёте маркетплейса, но быть убыточным с учётом закупочной цены.</p>
+<p><strong>Как исправить.</strong> Используйте готовый CSV-формат справочника себестоимостей — он уже настроен под структуру Ozon. Для быстрого заполнения: отсортируйте товары по обороту за январь и заполните топ-10 сначала — это даст 80% картины.</p>`
+  },
+  fines: {
+    title: 'Штрафы за отгрузку: −1 250 ₽',
+    text: `<p>В январе зафиксированы штрафы 4 типов на сумму <span class="hl-red">−1 250 ₽</span>:</p>
+<p>• <strong>Просроченная отгрузка</strong> — −350 ₽. Отгрузка позже срока, указанного в заказе. Решение: настроить уведомления о новых заказах, ускорить процесс сборки.</p>
+<p>• <strong>Нерекомендованный слот</strong> — −450 ₽. Привоз в слот отличный от выданного системой. Решение: строго следовать расписанию слотов при бронировании.</p>
+<p>• <strong>Привезли не тот товар</strong> — −300 ₽. Пересортица при упаковке. Решение: двойная проверка артикулов перед запечатыванием коробок.</p>
+<p>• <strong>Отмена</strong> — −150 ₽. Отмена подтверждённого заказа. Решение: синхронизировать остатки в ЛК с реальным складом в реальном времени.</p>
+<p>Все четыре причины — операционные и полностью устранимы. При повторении в феврале рекомендую разобрать каждый случай с командой.</p>`
+  },
+  realfbs: {
+    title: 'Что такое вычеты вне SKU',
+    text: `<p>Часть начислений в отчёте Ozon не привязана к конкретным артикулам — это услуги уровня аккаунта, а не товара.</p>
+<p><strong>Услуги realFBS (−5 128 ₽)</strong> — это агентское вознаграждение Ozon за обработку заказов по схеме realFBS. При этой схеме вы доставляете товар сами через партнёров (СДЭК, Почта России и т.д.), а Ozon берёт комиссию за обработку.</p>
+<p><strong>Хранение FBO (−479 ₽)</strong> — плата за размещение товаров на складах Ozon. Небольшая сумма, но стоит следить за ротацией — залежавшиеся товары начинают стоить дороже.</p>
+<p><strong>Компенсации Ozon (+2 608 ₽)</strong> — положительная статья. Это выплаты за потери товара по вине Ozon (зафиксирована потеря на 1 523 ₽) и выигранные споры. Это ваши деньги — важно своевременно подавать заявки на компенсацию при обнаружении расхождений.</p>`
+  },
+  pl: {
+    title: 'Разбор P&L: почему так мало прибыли',
+    text: `<p>Валовый доход в <span class="hl-blue">291 108 ₽</span> звучит убедительно — но до чистой прибыли доходит только <span class="hl-yellow">6.5%</span>. Разберём куда уходит остальное.</p>
+<p><strong>Комиссия Ozon — 41.5% (−120 694 ₽).</strong> Это нормальный уровень для категорий упаковки и фурнитуры на Ozon (ставки 40–47%). Здесь мало что можно изменить в краткосрочной перспективе.</p>
+<p><strong>Логистика — 24.5% (−71 235 ₽).</strong> Высокий показатель. Для коробок это объяснимо — крупные габариты дорого обходятся в логистике. Следите за тарифной зоной: склады в вашем регионе дают меньшую стоимость доставки.</p>
+<p><strong>Баллы за скидки — это "скрытый" вычет.</strong> Технически баллы — это доход. Но по сути это не живые деньги, а компенсация скидки от Ozon. Если убрать баллы из расчёта, реальная выручка = 145 461 ₽, а все вычеты Ozon составляют уже не 70%, а ~141% от реальной выручки. Это и объясняет, почему маржа такая низкая.</p>`
+  },
+  topsku: {
+    title: 'Разбор топ прибыльных SKU',
+    text: `<p><strong>Коробка-куб белая 21×21 (арт. 21052025001)</strong> — безусловный лидер: +5 217 ₽ при марже 25.8% и 28 продажах. Это ваш флагман. Стратегия: защитить от агрессивных акций (установить минимальную цену), масштабировать продажи через рекламу с ДРР ≤15%.</p>
+<p><strong>Наполнитель для подарка (18112025001)</strong> — лучшая маржа в топе: 33.5% при низкой себестоимости 50 ₽/шт. Небольшой объём (11 шт) — есть потенциал роста. Рекомендую протестировать увеличение рекламного бюджета.</p>
+<p><strong>Коробка для торта 16×16 (181120250099)</strong> — рекордная маржа 44.2%, но всего 2 продажи. Либо товар слишком дорого стоит и не продаётся в достаточном объёме, либо плохо выдаётся в поиске. Стоит проверить позицию в выдаче и оптимизировать карточку.</p>
+<p><strong>Общий паттерн прибыльных SKU:</strong> высокая маржа у товаров с оборотом ≥800 ₽/шт при умеренных габаритах. Мелкая фурнитура (брелоки) — большой объём продаж, но маржа давится логистикой.</p>`
+  },
+  losssku: {
+    title: 'Разбор убыточных SKU',
+    text: `<p><strong>Коробка с розовой окантовкой (29032025009)</strong> — самый проблемный товар. Убыток −509 ₽ при 4 продажах. Логистика 734 ₽ при выручке 541 ₽ — логистика превышает выручку в 1.4 раза. Это структурная проблема: товар либо слишком дёшево стоит для своих габаритов, либо неправильно указаны размеры в карточке (что влияет на тариф логистики). <strong>Решение: поднять цену до 900–1000 ₽ или проверить габариты в карточке.</strong></p>
+<p><strong>Коробка для рулета (13012025004)</strong> — убыток −305 ₽ при 6 продажах. Обратная логистика 327 ₽ говорит о высоком проценте возвратов. Проверьте отзывы — возможно, проблема с качеством или несоответствием описания.</p>
+<p><strong>Наполнитель малый (18112025003)</strong> — та же позиция, что и в прибыльных, но другой арт. Возможно, это та же себестоимость (50 ₽), но другой размер/цвет с более высокой логистикой. Сравните карточки — возможно, одну из них стоит вывести из продажи.</p>`
+  },
+  summary: {
+    title: 'Вопрос к AI',
+    text: `<p>Введите ваш вопрос по данным января — я отвечу на основе вашей юнит-экономики и P&L.<br><br>
+<em>Примеры вопросов:</em><br>
+• Почему маржа ниже цели?<br>
+• Какие товары стоит снять с продажи?<br>
+• Как снизить логистические затраты?<br>
+• Что будет, если поднять цену на коробку-куб на 15%?<br>
+• Объясни структуру вычетов</em></p>
+<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+  <button class="insight-btn" onclick="openModal('balls')">Баллы 99.5%</button>
+  <button class="insight-btn" onclick="openModal('margin')">Маржа 6.5%</button>
+  <button class="insight-btn" onclick="openModal('forecast')">Прогноз февраль</button>
+  <button class="insight-btn" onclick="openModal('actions')">Что делать?</button>
+  <button class="insight-btn" onclick="openModal('losssku')">Убыточные SKU</button>
+</div>`
+  }
+};
+
+function openModal(key) {
+  const data = INSIGHTS[key];
+  if (!data) return;
+  document.getElementById('modal-title').textContent = data.title;
+  document.getElementById('modal-content').innerHTML = '';
+  document.getElementById('modal-content').style.display = 'none';
+  document.getElementById('modal-loading').style.display = 'flex';
+  document.getElementById('modal').classList.add('open');
+
+  setTimeout(() => {
+    document.getElementById('modal-loading').style.display = 'none';
+    document.getElementById('modal-content').innerHTML = data.text;
+    document.getElementById('modal-content').style.display = 'block';
+  }, 900);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+</script>
+</body>
+</html>

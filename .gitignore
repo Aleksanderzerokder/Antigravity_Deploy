@@ -1,0 +1,22 @@
+# Секреты и ключи (КРИТИЧНО)
+.env
+credentials.json
+antigravity-market-analytics-*.json
+client_secret*.json
+
+# Данные и кэш
+cache/
+scratch/
+*.xlsx
+*.csv
+*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.pytest_cache/
+.vscode/
+.idea/

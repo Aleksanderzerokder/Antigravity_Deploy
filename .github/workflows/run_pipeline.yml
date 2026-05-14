@@ -1,0 +1,46 @@
+name: Antigravity ETL Pipeline
+
+on:
+  schedule:
+    # Запуск каждый понедельник в 00:00 UTC
+    - cron: '0 0 * * 1'
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Позволяет запускать вручную кнопкой в интерфейсе GitHub
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create Environment and Credentials
+        run: |
+          # Создаем .env из секретов GitHub
+          echo "GIGACHAT_AUTH_KEY=${{ secrets.GIGACHAT_AUTH_KEY }}" >> .env
+          echo "GIGACHAT_SCOPE=${{ secrets.GIGACHAT_SCOPE }}" >> .env
+          echo "GOOGLE_DRIVE_ROOT_FOLDER_ID=${{ secrets.GOOGLE_DRIVE_ROOT_FOLDER_ID }}" >> .env
+          echo "GOOGLE_APPLICATION_CREDENTIALS=credentials.json" >> .env
+          
+          # Создаем файл ключей Google из секрета
+          echo '${{ secrets.GOOGLE_CREDENTIALS_JSON }}' > credentials.json
+
+      - name: Run Analytics Pipeline
+        run: python main.py
+        env:
+          # Флаг для пропуска интерактивного ввода дат (автоопределение)
+          CI: true 
