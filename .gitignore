@@ -1,4 +1,4 @@
-# Секреты и ключи (КРИТИЧНО)
+# Секреты и ключи
 .env
 credentials.json
 antigravity-market-analytics-*.json
@@ -11,11 +11,21 @@ scratch/
 *.csv
 *.parquet
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.pytest_cache/
+.vscode/
+.idea/
+
 # Next.js & Node.js
-dashboard/node_modules/
-dashboard/.next/
-dashboard/out/
-dashboard/build/
+node_modules/
+.next/
+out/
+build/
 .env.local
 .env.development.local
 .env.test.local
