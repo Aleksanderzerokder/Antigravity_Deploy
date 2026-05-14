@@ -11,12 +11,12 @@ scratch/
 *.csv
 *.parquet
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-venv/
-env/
-.pytest_cache/
-.vscode/
-.idea/
+# Next.js & Node.js
+dashboard/node_modules/
+dashboard/.next/
+dashboard/out/
+dashboard/build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
