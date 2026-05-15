@@ -13,6 +13,8 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build, Resource
 from googleapiclient.http import MediaIoBaseDownload
 
+from schema_loader import load_schema, get_folder_name
+
 logger = logging.getLogger(__name__)
 
 # Настройки Google API
@@ -20,10 +22,21 @@ SCOPES: List[str] = ['https://www.googleapis.com/auth/drive']
 CREDS_FILE: str = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', 'credentials.json')
 ROOT_FOLDER_ID: Optional[str] = os.environ.get('GOOGLE_DRIVE_ROOT_FOLDER_ID')
 
-# Имена подпапок внутри каждого селлера (стандарт)
-FOLDER_IN: str = '1. IN'
-FOLDER_DICT: str = '2. DICTIONARIES'
-FOLDER_ARCHIVE: str = '3. ARCHIVE'
+# Имена папок читаем из схемы (единый источник правды)
+def _folder(key: str) -> str:
+    """Возвращает имя папки из seller_schema.json по ключу."""
+    try:
+        return get_folder_name(key)
+    except Exception:
+        # Fallback на случай недоступности схемы
+        defaults = {'financial': '1. IN', 'advertising': '1. ADS',
+                    'dictionaries': '2. DICTIONARIES', 'archive': '3. ARCHIVE'}
+        return defaults.get(key, key)
+
+FOLDER_IN: str = _folder('financial')
+FOLDER_ADS: str = _folder('advertising')
+FOLDER_DICT: str = _folder('dictionaries')
+FOLDER_ARCHIVE: str = _folder('archive')
 
 
 def get_service() -> Resource:
@@ -246,17 +259,18 @@ def get_seller_files(seller_folder_id: str, service: Optional[Resource] = None) 
 
     in_folder_id = _find_subfolder(service, seller_folder_id, FOLDER_IN)
     if not in_folder_id:
-        in_folder_id = _find_subfolder(service, seller_folder_id, "1. INN") # Fallback для опечаток
-        
+        in_folder_id = _find_subfolder(service, seller_folder_id, "1. INN")  # Fallback для опечаток
+
+    ads_folder_id = _find_subfolder(service, seller_folder_id, FOLDER_ADS)
     dict_folder_id = _find_subfolder(service, seller_folder_id, FOLDER_DICT)
 
     if not in_folder_id:
-        logger.warning(f"Папка IN не найдена в {seller_folder_id}")
+        logger.warning(f"Папка {FOLDER_IN} не найдена в {seller_folder_id}")
         return result
 
-    # Обработка входящих отчетов
+    # === Обработка финансовых отчётов (1. IN) ===
     in_files = list_files_in_folder(service, in_folder_id)
-    logger.info(f"Найдено {len(in_files)} файлов в папке IN")
+    logger.info(f"Найдено {len(in_files)} файлов в папке {FOLDER_IN}")
 
     for f in in_files:
         name_lower = f['name'].lower()
@@ -267,22 +281,52 @@ def get_seller_files(seller_folder_id: str, service: Optional[Resource] = None) 
             if 'supplier-goods' in name_lower or 'supplier_goods' in name_lower:
                 result['wb_supplier_goods'] = buf
                 logger.info(f"✅ Загружен WB supplier-goods: {f['name']}")
-            elif 'статистика' in name_lower and 'продвиж' not in name_lower:
-                # WB реклама: файлы типа "Статистика (1).xlsx"
-                result['wb_ads'].append(buf)
-                logger.info(f"✅ Загружен WB рекламный отчёт: {f['name']}")
-            elif 'аналитика продвиж' in name_lower or 'продвижение' in name_lower:
-                # Ozon реклама: "Аналитика продвижения"
-                result['ozon_ads'].append(buf)
-                logger.info(f"✅ Загружен Ozon рекламный отчёт: {f['name']}")
             elif 'еженедельный' in name_lower or 'детализированный' in name_lower:
                 result['wb_reports'].append(buf)
-                logger.info(f"✅ Загружен WB еженедельный отчет: {f['name']}")
+                logger.info(f"✅ Загружен WB еженедельный отчёт: {f['name']}")
             elif 'начислени' in name_lower or 'ozon' in name_lower:
                 result['ozon_report'] = buf
-                logger.info(f"✅ Загружен Ozon отчет: {f['name']}")
+                logger.info(f"✅ Загружен Ozon отчёт: {f['name']}")
+            else:
+                logger.warning(f"⚠️  Файл в {FOLDER_IN} не распознан по имени: {f['name']} — пропущен")
         except Exception as e:
             logger.error(f"Не удалось загрузить файл {f['name']}: {e}")
+
+    # === Обработка рекламных отчётов (1. ADS) ===
+    # Всё содержимое этой папки — рекламные файлы. Тип определяется по колонкам.
+    if ads_folder_id:
+        ads_files = list_files_in_folder(service, ads_folder_id)
+        logger.info(f"Найдено {len(ads_files)} файлов в папке {FOLDER_ADS}")
+        for f in ads_files:
+            try:
+                buf = download_file_to_memory(service, f['id'])
+                result['new_file_ids'].append(f['id'])
+                # Читаем заголовки файла для определения маркетплейса
+                import io as _io
+                import pandas as _pd
+                buf.seek(0)
+                try:
+                    df_head = _pd.read_excel(buf, nrows=0)
+                    cols_lower = [str(c).lower() for c in df_head.columns]
+                    buf.seek(0)
+                    if any('номенклатура' in c for c in cols_lower):
+                        result['wb_ads'].append(buf)
+                        logger.info(f"✅ Загружен WB рекламный отчёт: {f['name']}")
+                    elif any('расход' in c for c in cols_lower) or any('sku' in c for c in cols_lower):
+                        result['ozon_ads'].append(buf)
+                        logger.info(f"✅ Загружен Ozon рекламный отчёт: {f['name']}")
+                    else:
+                        # Fallback: если неясно — WB
+                        result['wb_ads'].append(buf)
+                        logger.warning(f"⚠️  Тип рекламного файла не определён, считаем WB: {f['name']}")
+                except Exception:
+                    buf.seek(0)
+                    result['wb_ads'].append(buf)
+                    logger.warning(f"⚠️  Не удалось прочитать заголовки {f['name']}, считаем WB рекламой")
+            except Exception as e:
+                logger.error(f"Ошибка загрузки рекламного файла {f['name']}: {e}")
+    else:
+        logger.info(f"ℹ️  Папка {FOLDER_ADS} не найдена — рекламные расходы не учитываются")
 
     # Обработка справочников себестоимости
     if dict_folder_id:
@@ -338,8 +382,10 @@ def create_seller_folder_structure(seller_name: str, service: Optional[Resource]
 
         seller_id = _create_folder(seller_name, ROOT_FOLDER_ID)
         logger.info(f"Создана папка селлера: {seller_name} (ID: {seller_id})")
-        
-        for sub in [FOLDER_IN, FOLDER_DICT, FOLDER_ARCHIVE]:
+
+        # Читаем список папок из схемы — единый источник правды
+        from schema_loader import get_all_folder_names
+        for sub in get_all_folder_names():
             sub_id = _create_folder(sub, seller_id)
             logger.info(f"   Подпапка: {sub} (ID: {sub_id})")
 

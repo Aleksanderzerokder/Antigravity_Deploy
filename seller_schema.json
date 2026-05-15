@@ -1,0 +1,114 @@
+{
+  "version": "1.1",
+  "description": "Стандарт структуры папок и типов файлов для всех селлеров Antigravity Analytics",
+
+  "folders": {
+    "financial": {
+      "name": "1. IN",
+      "purpose": "Финансовые отчёты маркетплейсов (еженедельные, начисления)",
+      "archived": true
+    },
+    "advertising": {
+      "name": "1. ADS",
+      "purpose": "Рекламные отчёты маркетплейсов (статистика кампаний)",
+      "archived": true
+    },
+    "dictionaries": {
+      "name": "2. DICTIONARIES",
+      "purpose": "Справочники (себестоимость товаров)",
+      "archived": false
+    },
+    "archive": {
+      "name": "3. ARCHIVE",
+      "purpose": "Архив обработанных файлов",
+      "archived": false
+    }
+  },
+
+  "file_types": {
+    "wb_supplier_goods": {
+      "marketplace": "WB",
+      "folder": "financial",
+      "description": "Отчёт по товарам поставщика WB (количество заказов и выкупа)",
+      "detect_filename_keywords": ["supplier-goods", "supplier_goods"],
+      "detect_columns": {
+        "required_any": ["выкупленные товары", "выкупили", "заказано"],
+        "sku": ["артикул продавца", "артикул поставщика"]
+      }
+    },
+
+    "wb_weekly": {
+      "marketplace": "WB",
+      "folder": "financial",
+      "description": "Еженедельный детализированный отчёт WB (финансы по строкам)",
+      "detect_filename_keywords": ["еженедельный", "детализированный"],
+      "detect_columns": {
+        "required_any": ["вайлдберриз реализовал товар", "к перечислению продавцу", "к перечислению"],
+        "sku": ["артикул поставщика", "артикул продавца"],
+        "date": ["дата продажи", "дата реализации"],
+        "nomenclature": ["код номенклатуры"]
+      }
+    },
+
+    "ozon_charges": {
+      "marketplace": "Ozon",
+      "folder": "financial",
+      "description": "Отчёт по начислениям Ozon",
+      "detect_filename_keywords": ["начислени", "ozon"],
+      "detect_columns": {
+        "required_any": ["группа услуг", "тип начисления"],
+        "sku": ["артикул"],
+        "mp_sku": ["sku"],
+        "amount": ["сумма итого", "итого, руб"]
+      }
+    },
+
+    "wb_ads": {
+      "marketplace": "WB",
+      "folder": "advertising",
+      "description": "Рекламная статистика WB (детализация по товарам и кампаниям)",
+      "detect_filename_keywords": [],
+      "detect_columns": {
+        "required_any": ["номенклатура", "затраты, rub", "затраты"],
+        "nomenclature": ["номенклатура"],
+        "cost": ["затраты, rub", "затраты"]
+      }
+    },
+
+    "ozon_ads": {
+      "marketplace": "Ozon",
+      "folder": "advertising",
+      "description": "Аналитика продвижения Ozon",
+      "detect_filename_keywords": [],
+      "detect_columns": {
+        "required_any": ["расход, ₽", "расход"],
+        "sku": ["sku"],
+        "cost": ["расход, ₽", "расход"]
+      }
+    },
+
+    "cost_wb": {
+      "marketplace": "WB",
+      "folder": "dictionaries",
+      "description": "Справочник себестоимости для WB",
+      "detect_filename_keywords": ["вб", "wb", "себестоимост", "cost"],
+      "detect_columns": {
+        "required_any": ["себестоимость", "закуп"],
+        "sku": ["артикул"],
+        "cost": ["себестоимость", "закуп", "цена закупки"]
+      }
+    },
+
+    "cost_ozon": {
+      "marketplace": "Ozon",
+      "folder": "dictionaries",
+      "description": "Справочник себестоимости для Ozon",
+      "detect_filename_keywords": ["озон", "ozon", "себестоимост", "cost"],
+      "detect_columns": {
+        "required_any": ["себестоимость", "закуп"],
+        "sku": ["артикул"],
+        "cost": ["себестоимость", "закуп", "цена закупки"]
+      }
+    }
+  }
+}
