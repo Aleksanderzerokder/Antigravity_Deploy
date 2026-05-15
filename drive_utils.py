@@ -239,6 +239,8 @@ def get_seller_files(seller_folder_id: str, service: Optional[Resource] = None) 
         'wb_cost': None,
         'ozon_report': None,
         'ozon_cost': None,
+        'wb_ads': [],           # Рекламные отчёты WB (Статистика)
+        'ozon_ads': [],         # Рекламные отчёты Ozon (Продвижение)
         'new_file_ids': []
     }
 
@@ -265,6 +267,14 @@ def get_seller_files(seller_folder_id: str, service: Optional[Resource] = None) 
             if 'supplier-goods' in name_lower or 'supplier_goods' in name_lower:
                 result['wb_supplier_goods'] = buf
                 logger.info(f"✅ Загружен WB supplier-goods: {f['name']}")
+            elif 'статистика' in name_lower and 'продвиж' not in name_lower:
+                # WB реклама: файлы типа "Статистика (1).xlsx"
+                result['wb_ads'].append(buf)
+                logger.info(f"✅ Загружен WB рекламный отчёт: {f['name']}")
+            elif 'аналитика продвиж' in name_lower or 'продвижение' in name_lower:
+                # Ozon реклама: "Аналитика продвижения"
+                result['ozon_ads'].append(buf)
+                logger.info(f"✅ Загружен Ozon рекламный отчёт: {f['name']}")
             elif 'еженедельный' in name_lower or 'детализированный' in name_lower:
                 result['wb_reports'].append(buf)
                 logger.info(f"✅ Загружен WB еженедельный отчет: {f['name']}")

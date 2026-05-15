@@ -22,6 +22,7 @@ load_dotenv()
 
 # Локальные модули
 import consolidate as C
+from ads_parser import aggregate_ad_costs
 from ai_analyzer import generate_insights
 from drive_utils import get_service, get_seller_files, list_seller_folders, move_to_archive
 from sheets_utils import get_or_find_master_table, write_ai_dashboard, write_data_sheet
@@ -170,6 +171,45 @@ def run_for_seller(seller_folder_id: str, seller_name: str, service: Any,
         C.WB_COST_FILE = wb_cost_path
         C.OZON_COST_FILE = ozon_cost_path
 
+        # Обработка рекламных расходов
+        has_wb_ads = bool(files.get('wb_ads'))
+        has_ozon_ads = bool(files.get('ozon_ads'))
+        if has_wb_ads or has_ozon_ads:
+            logger.info("📊 Обработка рекламных отчётов...")
+            # Для WB-маппинга номенклатуры → артикул поставщика используем WB-отчёты
+            wb_sku_map: Dict[str, str] = {}
+            if wb_rev_paths:
+                import pandas as _pd
+                try:
+                    from consolidate import read_excel_with_header, clean_sku, _WB_REV_KEEP_KEYWORDS
+                    for rev_path in wb_rev_paths:
+                        _df, _ = read_excel_with_header(rev_path, ['артикул'], keep_keywords=_WB_REV_KEEP_KEYWORDS)
+                        if not _df.empty:
+                            nom_col = next((c for c in _df.columns if 'код номенклатуры' in str(c).lower()), None)
+                            art_col = next((c for c in _df.columns if 'артикул поставщика' in str(c).lower() or 'артикул продавца' in str(c).lower()), None)
+                            if nom_col and art_col:
+                                for _, row in _df[[nom_col, art_col]].drop_duplicates().iterrows():
+                                    wb_sku_map[clean_sku(row[nom_col])] = clean_sku(row[art_col])
+                except Exception as _e:
+                    logger.warning(f"Не удалось построить WB маппинг номенклатур: {_e}")
+
+            ads_result = aggregate_ad_costs(
+                wb_ads_bufs=files.get('wb_ads', []),
+                ozon_ads_bufs=files.get('ozon_ads', []),
+                wb_sku_map=wb_sku_map or None
+            )
+            # Разделяем WB и Ozon-расходы (в данном MVP все прямые идут в WB)
+            C.WB_ADS_PER_SKU = ads_result['per_sku']
+            C.WB_ADS_UNALLOCATED = ads_result['unallocated']
+            C.OZON_ADS_PER_SKU = {}
+            C.OZON_ADS_UNALLOCATED = 0.0
+        else:
+            logger.info("ℹ️  Рекламные отчёты не найдены — расходы на рекламу не учитываются.")
+            C.WB_ADS_PER_SKU = {}
+            C.WB_ADS_UNALLOCATED = 0.0
+            C.OZON_ADS_PER_SKU = {}
+            C.OZON_ADS_UNALLOCATED = 0.0
+
         # Определение периода
         current_from = global_from
         current_to = global_to
@@ -187,8 +227,10 @@ def run_for_seller(seller_folder_id: str, seller_name: str, service: Any,
         # 4. Консолидация
         cols = ['Период', 'Маркетплейс', 'Название', 'Seller_Art', 'SKU_МП',
                 'Количество', 'Выручка', 'Комиссия', 'Логистика', 'Хранение',
-                'Прочие_расходы', 'Себестоимость_Общая', 'Чистая_Прибыль', 'Рентабельность_%', 'ROI_%']
-        
+                'Прочие_расходы', 'Себестоимость_Общая',
+                'Реклама_Прямая', 'Реклама_Нераспред', 'Реклама_Итого',
+                'Чистая_Прибыль', 'Рентабельность_%', 'ROI_%']
+
         frames = []
         for df, mp_name in [(wb_df, 'WB'), (ozon_df, 'Ozon')]:
             if not df.empty:
@@ -208,7 +250,11 @@ def run_for_seller(seller_folder_id: str, seller_name: str, service: Any,
         final_df = pd.concat(frames, ignore_index=True)
         # Фильтр пустых строк
         final_df = final_df[(final_df['Количество'] != 0) | (final_df['Выручка'] != 0)]
-        final_df.rename(columns={'Seller_Art': 'Артикул', 'SKU_МП': 'SKU'}, inplace=True)
+        final_df.rename(columns={
+            'Seller_Art': 'Артикул', 'SKU_МП': 'SKU',
+            'Реклама_Прямая': 'Реклама (прямая)', 'Реклама_Нераспред': 'Нераспред. маркетинг',
+            'Реклама_Итого': 'Реклама (итого)'
+        }, inplace=True)
 
         # 5. Выгрузка
         spreadsheet = get_or_find_master_table(seller_folder_id, seller_name)

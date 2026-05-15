@@ -25,6 +25,14 @@ OZON_FILE: str = ''
 WB_COST_FILE: str = ''
 OZON_COST_FILE: str = ''
 
+# Рекламные расходы (устанавливаются через main.py после вызова ads_parser)
+# Словарь: {seller_article -> ad_spend_rub}
+WB_ADS_PER_SKU: Dict[str, float] = {}
+OZON_ADS_PER_SKU: Dict[str, float] = {}
+# Нераспределённые маркетинговые расходы (без SKU-привязки)
+WB_ADS_UNALLOCATED: float = 0.0
+OZON_ADS_UNALLOCATED: float = 0.0
+
 # Константы фильтрации столбцов
 _WB_REV_KEEP_KEYWORDS: List[str] = [
     'артикул продавца', 'артикул поставщика', 'дата продажи', 'тип документа',
@@ -338,13 +346,28 @@ def process_wb(date_from: Optional[str] = None, date_to: Optional[str] = None) -
 
         wb_final['Себестоимость_шт'] = wb_final['Seller_Art'].map(cost_dict).fillna(0)
         wb_final['Себестоимость_Общая'] = wb_final['Количество'] * wb_final['Себестоимость_шт']
-        wb_final['Чистая_Прибыль'] = wb_final['К_перечислению'] - wb_final['Логистика'] - wb_final['Хранение'] - wb_final['Прочие_удержания'] - wb_final['Себестоимость_Общая']
-        
-        wb_final['Маркетплейс'] = 'WB'
+
+        # === Рекламные расходы WB ===
+        # 1. Прямые расходы: привязаны к конкретному артикулу
+        wb_final['Реклама_Прямая'] = wb_final['Seller_Art'].map(WB_ADS_PER_SKU).fillna(0)
+        # 2. Нераспределённые: распределяем пропорционально выручке
         wb_final.rename(columns={'Выручка_Сырая': 'Выручка'}, inplace=True)
+        total_wb_revenue = wb_final['Выручка'].sum()
+        if WB_ADS_UNALLOCATED > 0 and total_wb_revenue > 0:
+            wb_final['Реклама_Нераспред'] = (wb_final['Выручка'] / total_wb_revenue) * WB_ADS_UNALLOCATED
+            logger.info(f"   WB: распределено нераспред. маркетинга {WB_ADS_UNALLOCATED:.2f} руб. пропорционально выручке")
+        else:
+            wb_final['Реклама_Нераспред'] = 0.0
+        wb_final['Реклама_Итого'] = wb_final['Реклама_Прямая'] + wb_final['Реклама_Нераспред']
+
+        wb_final['Чистая_Прибыль'] = (wb_final['К_перечислению'] - wb_final['Логистика']
+                                       - wb_final['Хранение'] - wb_final['Прочие_удержания']
+                                       - wb_final['Себестоимость_Общая'] - wb_final['Реклама_Итого'])
+
+        wb_final['Маркетплейс'] = 'WB'
         wb_final['Рентабельность_%'] = np.where(wb_final['Выручка'] > 0, (wb_final['Чистая_Прибыль'] / wb_final['Выручка']) * 100, 0)
         wb_final['ROI_%'] = np.where(wb_final['Себестоимость_Общая'] > 0, (wb_final['Чистая_Прибыль'] / wb_final['Себестоимость_Общая']) * 100, 0)
-        
+
         return wb_final
     except Exception as e:
         logger.error(f"Критическая ошибка process_wb: {e}")
@@ -414,12 +437,25 @@ def process_ozon() -> pd.DataFrame:
 
         ozon_agg['Себестоимость_шт'] = ozon_agg['Seller_Art'].map(cost_dict).fillna(0)
         ozon_agg['Себестоимость_Общая'] = ozon_agg['Количество'] * ozon_agg['Себестоимость_шт']
-        ozon_agg['Чистая_Прибыль'] = ozon_agg['Выручка'] - ozon_agg['Комиссия'] - ozon_agg['Логистика'] - ozon_agg['Прочие_расходы'] - ozon_agg['Себестоимость_Общая']
-        
+
+        # === Рекламные расходы Ozon ===
+        ozon_agg['Реклама_Прямая'] = ozon_agg['Seller_Art'].map(OZON_ADS_PER_SKU).fillna(0)
+        total_ozon_revenue = ozon_agg['Выручка'].sum()
+        if OZON_ADS_UNALLOCATED > 0 and total_ozon_revenue > 0:
+            ozon_agg['Реклама_Нераспред'] = (ozon_agg['Выручка'] / total_ozon_revenue) * OZON_ADS_UNALLOCATED
+            logger.info(f"   Ozon: распределено нераспред. маркетинга {OZON_ADS_UNALLOCATED:.2f} руб. пропорционально выручке")
+        else:
+            ozon_agg['Реклама_Нераспред'] = 0.0
+        ozon_agg['Реклама_Итого'] = ozon_agg['Реклама_Прямая'] + ozon_agg['Реклама_Нераспред']
+
+        ozon_agg['Чистая_Прибыль'] = (ozon_agg['Выручка'] - ozon_agg['Комиссия']
+                                       - ozon_agg['Логистика'] - ozon_agg['Прочие_расходы']
+                                       - ozon_agg['Себестоимость_Общая'] - ozon_agg['Реклама_Итого'])
+
         ozon_agg['Маркетплейс'] = 'Ozon'
         ozon_agg['Рентабельность_%'] = np.where(ozon_agg['Выручка'] > 0, (ozon_agg['Чистая_Прибыль'] / ozon_agg['Выручка']) * 100, 0)
         ozon_agg['ROI_%'] = np.where(ozon_agg['Себестоимость_Общая'] > 0, (ozon_agg['Чистая_Прибыль'] / ozon_agg['Себестоимость_Общая']) * 100, 0)
-        
+
         return ozon_agg
     except Exception as e:
         logger.error(f"Критическая ошибка process_ozon: {e}")
